@@ -57,16 +57,27 @@ def draw_graph(sp_mat, edge_labels, edges):
     G = dgl.from_scipy(sp_mat, eweight_name='w')
     nx_G = G.to_networkx().to_undirected()
     edge_color = ['b'] * n
+    node_color = [[.7, .7, .7]]
+    node_map = defaultdict(list)
+
     edges_all = list(nx_G.edges)
     for i in range(n):
         u = edges_all[i][0]
         v = edges_all[i][1]
-        if (u, v) in edges or (v, u) in edges:
+        if (u, v) in edges:
             edge_color[i] = 'r'
+            node_map['r'].append(u)
+        elif (v, u) in edges:
+            edge_color[i] = 'r'
+            node_map['r'].append(v)
+        else:
+            node_map['b'].append(u)
     
     # Kamada-Kawaii layout usually looks pretty for arbitrary graphs
     pos = nx.kamada_kawai_layout(nx_G)
-    nx.draw(nx_G, pos, with_labels=True, node_color=[[.7, .7, .7]], edge_color=tuple(edge_color))
+    # for node_color, node_list in node_map.items():
+    print(node_map)
+    nx.draw(nx_G, pos, with_labels=True, node_color=node_color, edge_color=tuple(edge_color))
     nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_color='b')
     plt.show()
 
