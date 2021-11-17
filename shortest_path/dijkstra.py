@@ -80,10 +80,14 @@ def main():
     end_node = 4
     sp_mat = sp.coo_matrix((data, (row, col)), shape=(count_node, count_node))
     graph = sp_mat.toarray()
+    # 无向图
     for i in range(len(graph)):
         for j in range(i):
             if graph[i][j] == 0 and graph[j][i] == 0:
-                graph[i][j] = graph[j][i] = INF 
+                graph[i][j] = graph[j][i] = INF
+            else:
+                graph[i][j] += graph[j][i]
+                graph[j][i] = graph[i][j]
     print(graph)
     paths, distance = dijkstra(graph).shortest_path(0, 4)
     edge_labels = defaultdict(tuple)
