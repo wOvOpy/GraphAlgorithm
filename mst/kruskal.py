@@ -67,7 +67,7 @@ def main():
     nx.draw(G, pos, with_labels=True, edge_color=tuple(edge_color))
     edge_labels = nx.get_edge_attributes(G, 'weight')
     nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
-    plt.savefig("mst/kruskal.png", format="PNG")
+    plt.savefig("kruskal.png", format="PNG")
     plt.show()
 
 if __name__ == '__main__':

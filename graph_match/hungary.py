@@ -15,7 +15,7 @@ class hungary:
             for j in range(n):
                 if self.graph[i][j] and j not in visited:
                     visited.add(j)
-                    if match[j] == -1 or dfs(match[j]):
+                    if match[j] == -1 or dfs(match[j], visited):
                         match[j] = i
                         return True
             return False
