@@ -1,14 +1,13 @@
 import torch
 import dgl
 import numpy as np
-import sys
 import networkx as nx
 import scipy.sparse as sp
 from collections import defaultdict
 import matplotlib.pyplot as plt
 
-INF = 20211117
 
+INF = 20211119
 # 迪杰特斯拉算法
 class dijkstra:
     def __init__(self, graph):
@@ -55,12 +54,11 @@ def paths_to_edges(paths, end_node):
     return edges
 
 # 画图
-def draw_graph(sp_mat, count_node, edge_labels, edges):
+def draw(sp_mat, count_node, edge_labels, edges):
     n = len(sp_mat.data)
     G = dgl.from_scipy(sp_mat, eweight_name='w')
     nx_G = G.to_networkx().to_undirected()
     edge_color = ['b'] * n
-    node_color = [[.7, .7, .7]]
     node_dict = defaultdict(list)
     shortest_node = set()
     for u, v in edges:
@@ -77,13 +75,11 @@ def draw_graph(sp_mat, count_node, edge_labels, edges):
     
     # Kamada-Kawaii layout usually looks pretty for arbitrary graphs
     pos = nx.kamada_kawai_layout(nx_G)
-    # for node_color, node_list in node_map.items():
-    # print(node_dict)
     for node_color, node_list in node_dict.items():
         nx.draw(nx_G, pos, with_labels=True, node_color=node_color, nodelist = node_list, edge_color=tuple(edge_color))
-    nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_color='b')
-    # plt.show()
-    plt.savefig("shortest_path.png", format="PNG") 
+    nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
+    plt.savefig("shortest_path.png", format="PNG")
+    plt.show()
 
 def main():
     row = np.array([0, 0, 1, 1, 2, 2, 3, 3, 4])
@@ -92,7 +88,7 @@ def main():
 
     count_node = 6
     start_node = 0
-    end_node = 4
+    end_node = 5
     sp_mat = sp.coo_matrix((data, (row, col)), shape=(count_node, count_node))
     graph = sp_mat.toarray()
     # 无向图
@@ -109,7 +105,7 @@ def main():
         edge_labels[(row[i], col[i])] = data[i]
 
     edges = paths_to_edges(paths, end_node)
-    draw_graph(sp_mat, count_node, edge_labels, edges)
+    draw(sp_mat, count_node, edge_labels, edges)
     print('{}到{}的最短路径是{}'.format(start_node, end_node, distance))
     print('经过了{}这些边到达'.format(edges))
 
