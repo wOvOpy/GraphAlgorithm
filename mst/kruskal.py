@@ -1,19 +1,15 @@
-import numpy as np
 import networkx as nx
-import dgl
 import matplotlib.pyplot as plt
 from collections import defaultdict
 
-'''
-我要去看论文了，byebye!!
-'''
+# 并查集实现Kruskal算法
 class kruskal:
     def __init__(self, graph) -> None:
         self.graph = graph
             
     def mst(self):
         n = len(self.graph)
-        tree = defaultdict(int)
+        mst_edges = defaultdict(int)
         parent = [_ for _ in range(n)]
         rank = [0] * n
         
@@ -43,25 +39,18 @@ class kruskal:
                 continue
             else:
                 union(u, v)
-                tree[(u, v)] = w
-        return tree        
+                mst_edges[(u, v)] = w
+        return mst_edges        
 
-
-def main():
-    graph = [(0, 1, 6), (0, 2, 1), (0, 3, 5), (1, 2, 5), (1, 4, 3), (2, 3, 5), (2, 4, 6), (2, 5, 4), (3, 5, 2), (4, 5, 6)]
-    
-    tree = kruskal(graph).mst()
-    print(tree)
-    n = len(graph)
+def draw(G, mst_edges):
+    edges = list(G.edges)
+    n = len(edges)
     edge_color = ['b'] * n
-    edge_set = set([_ for _ in tree.keys()])
-    print(edge_set)
-        
-    G = nx.Graph()
-    G.add_weighted_edges_from(graph)
-    edge_all = list(G.edges)
+    color_edges = set([_ for _ in mst_edges.keys()])
+
     for i in range(n):
-        if edge_all[i] in edge_set:
+        u, v = edges[i][0], edges[i][1]
+        if (u, v) in color_edges or (v, u) in color_edges:
             edge_color[i] = 'r'
     pos = nx.kamada_kawai_layout(G)
     nx.draw(G, pos, with_labels=True, edge_color=tuple(edge_color))
@@ -69,6 +58,16 @@ def main():
     nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
     plt.savefig("kruskal.png", format="PNG")
     plt.show()
+
+def main():
+    graph = [(0, 1, 6), (0, 2, 1), (0, 3, 5), (1, 2, 5), (1, 4, 3), (2, 3, 5), (2, 4, 6), (2, 5, 4), (3, 5, 2), (4, 5, 6)]
+    
+    mst_edges = kruskal(graph).mst()
+    print(mst_edges)
+        
+    G = nx.Graph()
+    G.add_weighted_edges_from(graph)
+    draw(G, mst_edges)
 
 if __name__ == '__main__':
     main()
