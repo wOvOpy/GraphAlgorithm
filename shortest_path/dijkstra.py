@@ -1,113 +1,93 @@
-import torch
-import dgl
-import numpy as np
-import networkx as nx
-import scipy.sparse as sp
 from collections import defaultdict
+import networkx as nx
 import matplotlib.pyplot as plt
+from collections import defaultdict
+
+INF = 20211120
 
 
-INF = 20211119
-# 迪杰特斯拉算法
-class dijkstra:
-    def __init__(self, graph):
+class Dijkstra:
+    def __init__(self, graph, num_nodes) -> None:
         self.graph = graph
+        self.num_nodes = num_nodes
 
-    def shortest_path(self, start_node, end_node):
-        n = len(self.graph)
-        paths = [-1] * n
-        for i in range(n):
-            if self.graph[start_node][i] == INF or self.graph[start_node][i] == 0:
-                paths[i] = -1
-            else:
-                paths[i] = start_node
-        visited = [start_node]
-        rested = [_ for _ in range(n) if _ != start_node]
-        distance = self.graph[start_node]
-        
-        while len(rested):
-            min_idx = rested[0]
-            for i in rested:
-                if distance[i] < distance[min_idx]:
-                    min_idx = i
-            if min_idx == end_node:
-                break
-            visited.append(min_idx)
-            rested.remove(min_idx)
-            
-            for i in rested:
-                if distance[min_idx] + self.graph[min_idx][i] < distance[i]:
-                    distance[i] = distance[min_idx] + self.graph[min_idx][i]
-                    paths[i] = min_idx
-        return paths, distance[end_node]
-    
+    def shortest_path(self, start_node):
+        paths = [-1] * self.num_nodes
+        distance = [INF] * self.num_nodes
+        edge_weight = dict()
+        node_neighbors = defaultdict(set)
+        for (u, v, w) in self.graph:
+            # 有向图
+            edge_weight[(u, v)] = w
+            node_neighbors[u].add(v)
 
-# 最短路径上的节点转化为经过的边集合
+        for neighbor in node_neighbors[start_node]:
+            paths[neighbor] = start_node
+            distance[neighbor] = edge_weight[(start_node, neighbor)]
+
+            visited = [start_node]
+            not_visit = [_ for _ in range(self.num_nodes) if _ != start_node]
+
+            while len(not_visit):
+                min_w_node = not_visit[0]
+                for i in not_visit:
+                    if distance[i] < distance[min_w_node]:
+                        min_w_node = i
+                not_visit.remove(min_w_node)
+                visited.append(min_w_node)
+
+                for i in not_visit:
+                    if distance[min_w_node]+edge_weight.get((min_w_node, i), INF) < distance[i]:
+                        distance[i] = distance[min_w_node]+edge_weight[(min_w_node, i)]
+                        paths[i] = min_w_node
+        return paths, distance
+
 def paths_to_edges(paths, end_node):
-    edges = set()
+    edges, nodes = [], []
     v = end_node
+    nodes.append(v)
     while paths[end_node] != -1:
         u = paths[end_node]
-        edges.add((u, v))
+        nodes.append(u)
+        edges.append((u, v))
         end_node = u
         v = u
-    return edges
+    return nodes[::-1], edges[::-1]
 
-# 画图
-def draw(sp_mat, count_node, edge_labels, edges):
-    n = len(sp_mat.data)
-    G = dgl.from_scipy(sp_mat, eweight_name='w')
-    nx_G = G.to_networkx().to_undirected()
-    edge_color = ['b'] * n
-    node_dict = defaultdict(list)
-    shortest_node = set()
-    for u, v in edges:
-        shortest_node.add(u)
-        shortest_node.add(v)
-    node_dict['r'] = list(shortest_node)
-    node_dict['b'] = list(set(range(count_node)) - shortest_node)
-    edges_all = list(nx_G.edges)
-    for i in range(n):
-        u = edges_all[i][0]
-        v = edges_all[i][1]
-        if (u, v) in edges or (v, u) in edges:
+def draw(graph, color_nodes, color_edges):
+    DG = nx.DiGraph()
+    DG.add_weighted_edges_from(graph)
+    edges = list(DG.edges)
+    num_nodes = DG.number_of_nodes()
+    num_edges = DG.number_of_edges()
+    node_color = ['b'] * num_nodes
+    edge_color = ['b'] * num_edges
+
+    for i in color_nodes:
+        node_color[i] = 'r'
+
+    for i in range(num_edges):
+        u, v = edges[i][0], edges[i][1]
+        if (u, v) in set(color_edges):
             edge_color[i] = 'r'
-    
-    # Kamada-Kawaii layout usually looks pretty for arbitrary graphs
-    pos = nx.kamada_kawai_layout(nx_G)
-    for node_color, node_list in node_dict.items():
-        nx.draw(nx_G, pos, with_labels=True, node_color=node_color, nodelist = node_list, edge_color=tuple(edge_color))
-    nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
-    plt.savefig("shortest_path.png", format="PNG")
+    pos = nx.circular_layout(DG)
+    nx.draw(DG, pos, with_labels=True, node_color=node_color, edge_color=tuple(edge_color))
+    edge_labels = nx.get_edge_attributes(DG, 'weight')
+    nx.draw_networkx_edge_labels(DG, pos, edge_labels=edge_labels)
+    # plt.savefig('DG_SP.png', format='PNG')
     plt.show()
 
+
 def main():
-    row = np.array([0, 0, 1, 1, 2, 2, 3, 3, 4])
-    col = np.array([1, 2, 2, 3, 4, 3, 4, 5, 5])
-    data = np.array([1, 12, 9, 3, 5, 4, 13, 15, 4])
+    num_nodes = 6
+    graph = [(0, 1, 1), (0, 2, 12), (1, 2, 9), (1, 3, 3), (2, 4, 5), (2, 3, 4), (3, 4, 13), (3, 5, 15), (4, 5, 4)]
 
-    count_node = 6
     start_node = 0
-    end_node = 5
-    sp_mat = sp.coo_matrix((data, (row, col)), shape=(count_node, count_node))
-    graph = sp_mat.toarray()
-    # 无向图
-    for i in range(len(graph)):
-        for j in range(i):
-            if graph[i][j] == 0 and graph[j][i] == 0:
-                graph[i][j] = graph[j][i] = INF
-            else:
-                graph[i][j] += graph[j][i]
-                graph[j][i] = graph[i][j]
-    paths, distance = dijkstra(graph).shortest_path(start_node, end_node)
-    edge_labels = defaultdict(tuple)
-    for i in range(len(data)):
-        edge_labels[(row[i], col[i])] = data[i]
-
-    edges = paths_to_edges(paths, end_node)
-    draw(sp_mat, count_node, edge_labels, edges)
-    print('{}到{}的最短路径是{}'.format(start_node, end_node, distance))
-    print('经过了{}这些边到达'.format(edges))
+    paths, distance = Dijkstra(graph, num_nodes).shortest_path(start_node)
+    for end_node in range(num_nodes):
+        print('{}->{}: {} | {}'.format(start_node, end_node, paths_to_edges(paths, end_node), distance[end_node]))
+    color_nodes, color_edges = paths_to_edges(paths, end_node=5)
+    draw(graph, color_nodes, color_edges)
 
 if __name__ == '__main__':
     main()
