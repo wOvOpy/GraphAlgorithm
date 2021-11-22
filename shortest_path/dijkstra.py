@@ -110,7 +110,7 @@ def draw(DG, color_nodes, color_edges):
     edge_labels = nx.get_edge_attributes(DG, 'weight')
     edge_labels = { (key[0],key[1]): "w:"+str(edge_labels[key]) for key in edge_labels }
     nx.draw_networkx_edge_labels(DG, pos, edge_labels=edge_labels) # 画权重
-    plt.savefig('dijstra.png', format='PNG')
+    plt.savefig('dijkstra.png', format='PNG')
     plt.show()
 
 
