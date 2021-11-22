@@ -43,17 +43,17 @@ class Kruskal:
 
 def draw(G, color_edges):
     edges = list(G.edges)
-    n = len(edges)
-    edge_color = ['b'] * n
+    num_edge = len(edges)
+    edge_color = ['b'] * num_edge
     color_edges = set(color_edges)
 
-    for i in range(n):
+    for i in range(num_edge):
         u, v = edges[i][0], edges[i][1]
         # 无向图
         if (u, v) in color_edges or (v, u) in color_edges:
             edge_color[i] = 'r'
     pos = nx.kamada_kawai_layout(G)
-    nx.draw(G, pos, with_labels=True, edge_color=tuple(edge_color))
+    nx.draw(G, pos, with_labels=True, edge_color=edge_color)
     edge_labels = nx.get_edge_attributes(G, 'weight')
     nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
     plt.savefig("kruskal.png", format="PNG")
