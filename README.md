@@ -4,7 +4,8 @@
 - [代码](shortest_path/dijkstra.py)
 - [图例](shortest_path/dijkstra.png)
 ### 1.2 Bellman-Ford algorithm
-
+- [代码](shortest_path/bellman_ford.py)
+- [图例](shortest_path/bellman_ford.png)
 ### 1.3 Floyd-Warshall algorithm
 - [代码](shortest_path/floyd_warshall.py)
 - [图例](shortest_path/floyd_warshall.png)

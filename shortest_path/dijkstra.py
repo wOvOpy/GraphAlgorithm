@@ -1,55 +1,59 @@
-from collections import defaultdict
 import networkx as nx
 import matplotlib.pyplot as plt
 from collections import defaultdict
 
-INF = 20211120
 
 
 class Dijkstra:
-    def __init__(self, graph, num_nodes) -> None:
-        self.graph = graph
-        self.num_nodes = num_nodes # 图中所有节点的数目
+    def __init__(self, nodes, edges) -> None:
+        self.nodes = nodes
+        self.edges = edges
 
     def shortest_path(self, start_node):
-        paths = [-1] * self.num_nodes # 记录路径，初始化全为：-1
-        distance = [INF] * self.num_nodes # 初始化最短距离全为：INF
-        edge_weight = dict() # 边和权重映射
+        num_node = len(self.nodes)
+        parent = [None] * num_node # 记录路径，初始化全为：None
+        distance = [None] * num_node # 初始化最短距离全为：None
+        edge_weight = defaultdict(lambda: None) # 边和权重映射
         node_neighbors = defaultdict(set) # 节点和其邻居映射
         # 初始化
-        for (u, v, w) in self.graph:
+        for (u, v, w) in self.edges:
             # 有向图
             edge_weight[(u, v)] = w
             node_neighbors[u].add(v)
+        distance[start_node] = 0
 
         for neighbor in node_neighbors[start_node]:
-            paths[neighbor] = start_node
+            parent[neighbor] = start_node
             distance[neighbor] = edge_weight[(start_node, neighbor)]
 
             visited = [start_node] # 已经访问的节点
-            not_visit = [_ for _ in range(self.num_nodes) if _ != start_node] # 还没有访问的节点
+            not_visit = [_ for _ in range(num_node) if _ != start_node] # 还没有访问的节点
 
             while len(not_visit):
                 min_w_node = not_visit[0] # min_w_node : 某阶段开始节点start_node到它的距离最短的点
                 for i in not_visit:
-                    if distance[i] < distance[min_w_node]:
+                    if distance[i] == None:
+                        continue
+                    elif distance[i] < distance[min_w_node]:
                         min_w_node = i
                 not_visit.remove(min_w_node)
                 visited.append(min_w_node)
 
                 # 更新最短距离和最短路径
                 for i in not_visit:
-                    if distance[min_w_node]+edge_weight.get((min_w_node, i), INF) < distance[i]:
+                    if edge_weight[(min_w_node, i)] == None:
+                        continue
+                    elif distance[i] == None or distance[min_w_node]+edge_weight[(min_w_node, i)] < distance[i]:
                         distance[i] = distance[min_w_node]+edge_weight[(min_w_node, i)]
-                        paths[i] = min_w_node
-        return paths, distance
+                        parent[i] = min_w_node
+        return parent, distance
 
-def get_nodes_edges(paths, end_node):
-    '''由paths得出最短路径所有节点和所有边
+def get_nodes_edges(parent, end_node):
+    '''由parent得出最短路径所有节点和所有边
     
     Parameters
     ----------
-        paths: list
+        parent: list
             记录路径的一维列表
         end_node: int
             结束节点
@@ -65,8 +69,8 @@ def get_nodes_edges(paths, end_node):
     nodes, edges = [], []
     v = end_node
     nodes.append(v)
-    while paths[end_node] != -1:
-        u = paths[end_node]
+    while parent[end_node] != None:
+        u = parent[end_node]
         nodes.append(u)
         edges.append((u, v))
         end_node = u
@@ -87,7 +91,6 @@ def draw(DG, color_nodes, color_edges):
     -------
     None
     '''
-    print(type(DG))
     edges = list(DG.edges) # 图的所有边
     num_nodes = DG.number_of_nodes() # 图所有节点的数量
     num_edges = DG.number_of_edges() # 图所有边的数量
@@ -115,18 +118,19 @@ def draw(DG, color_nodes, color_edges):
 
 
 def main():
-    num_nodes = 6
-    graph = [(0, 1, 1), (0, 2, 12), (1, 2, 9), (1, 3, 3), (2, 4, 5), (2, 3, 4), (3, 4, 13), (3, 5, 15), (4, 5, 4)]
+    nodes = [0, 1, 2, 3, 4, 5, 6] # 节点6没有边连接，这里加入是测试画图时画出鼓励节点
+    edges = [(0, 1, 1), (0, 2, 12), (1, 2, 9), (1, 3, 3), (2, 4, 5), (2, 3, 4), (3, 4, 13), (3, 5, 15), (4, 5, 4)]
 
     start_node = 0 # 开始节点
-    paths, distance = Dijkstra(graph, num_nodes).shortest_path(start_node)
-    for end_node in range(num_nodes):
-        if start_node != end_node:
-            print('{}->{}: {} | {}'.format(start_node, end_node, get_nodes_edges(paths, end_node), distance[end_node]))
-    color_nodes, color_edges = get_nodes_edges(paths, end_node=5)
+    parent, distance = Dijkstra(nodes, edges).shortest_path(start_node)
+    for i in range(len(nodes)):
+        if start_node != nodes[i]:
+            print('{}->{}: {} | {}'.format(start_node, nodes[i], get_nodes_edges(parent, nodes[i]), distance[nodes[i]]))
+    pass_nodes, pass_edges = get_nodes_edges(parent, end_node=5)
     DG = nx.DiGraph()
-    DG.add_weighted_edges_from(graph)
-    draw(DG, color_nodes, color_edges)
+    DG.add_nodes_from(nodes)
+    DG.add_weighted_edges_from(edges)
+    draw(DG, pass_nodes, pass_edges)
 
 if __name__ == '__main__':
     main()

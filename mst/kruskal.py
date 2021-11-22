@@ -3,14 +3,15 @@ import matplotlib.pyplot as plt
 from collections import defaultdict
 
 class Kruskal:
-    def __init__(self, graph) -> None:
-        self.graph = graph
+    def __init__(self, nodes, edges) -> None:
+        self.nodes = nodes
+        self.edges = edges
             
     def mst(self):
-        n = len(self.graph)
+        num_nodes = len(self.nodes) # 节点数量
         mst_edges = defaultdict(int)
-        parent = [_ for _ in range(n)]
-        rank = [0] * n
+        parent = [_ for _ in range(num_nodes)]
+        rank = [0] * num_nodes
         '''并查集
         '''
         def find_parent(v):
@@ -29,7 +30,7 @@ class Kruskal:
                 rank[u] += 1
   
         edge_dict = defaultdict(int) # 边权映射
-        for (u, v, w) in self.graph:
+        for (u, v, w) in self.edges:
             edge_dict[(u, v)] = w
         # 按权重大小排序（顺序）
         sorted_edge_dict = sorted(edge_dict.items(), key=lambda x: x[1])
@@ -56,17 +57,19 @@ def draw(G, color_edges):
     nx.draw(G, pos, with_labels=True, edge_color=edge_color)
     edge_labels = nx.get_edge_attributes(G, 'weight')
     nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
-    plt.savefig("kruskal.png", format="PNG")
+    # plt.savefig("kruskal.png", format="PNG")
     plt.show()
 
 def main():
-    graph = [(0, 1, 6), (0, 2, 1), (0, 3, 5), (1, 2, 5), (1, 4, 3), (2, 3, 5), (2, 4, 6), (2, 5, 4), (3, 5, 2), (4, 5, 6)]
+    nodes = [0, 1, 2, 3, 4, 5]
+    edges = [(0, 1, 6), (0, 2, 1), (0, 3, 5), (1, 2, 5), (1, 4, 3), (2, 3, 5), (2, 4, 6), (2, 5, 4), (3, 5, 2), (4, 5, 6)]
     
-    mst_edges = Kruskal(graph).mst()
+    mst_edges = Kruskal(nodes, edges).mst()
     print('{} | {}'.format(mst_edges, sum(mst_edges.values())))
         
     G = nx.Graph()
-    G.add_weighted_edges_from(graph)
+    G.add_nodes_from(nodes)
+    G.add_weighted_edges_from(edges)
     draw(G, list(mst_edges.keys()))
 
 if __name__ == '__main__':

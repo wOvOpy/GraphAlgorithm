@@ -5,9 +5,9 @@ from collections import defaultdict
 
 
 class Prim:
-    def __init__(self, graph, num_nodes) -> None:
-        self.graph = graph
-        self.num_nodes = num_nodes
+    def __init__(self, nodes, edges) -> None:
+        self.nodes = nodes
+        self.edges = edges
     
     def mst(self, start_node):
         ''' prim算法生成最小生成树
@@ -25,8 +25,8 @@ class Prim:
         mst_weights : int
             最小生成树所有边上的权重和
         '''
+        num_nodes = len(self.nodes)
         mst_edges = defaultdict(int)
-        
         edge_weight = defaultdict(int) # 边和权重映射
         node_neighbors = defaultdict(set) # 节点和邻居映射
         visited = set()  # 已经访问的节点
@@ -34,14 +34,14 @@ class Prim:
         count = 1 # 已经访问的节点数目
 
         # 初始化
-        for (u, v, w) in self.graph:
+        for (u, v, w) in self.edges:
             node_neighbors[u].add(v)
             node_neighbors[v].add(u)
             edge_weight[(u, v)] = edge_weight[(v, u)] = w
             
-        while count != self.num_nodes:
+        while count != num_nodes:
             min_weight = sys.maxsize
-            cur_node, next_node = -1, -1
+            cur_node, next_node = None, None
             for u in visited:
                 for v in node_neighbors[u]:
                     if v not in visited and edge_weight[(u, v)] < min_weight:
@@ -50,7 +50,8 @@ class Prim:
                         next_node = v     
             visited.add(next_node)
             count += 1
-            mst_edges[(cur_node, next_node)] = min_weight
+            if cur_node != None and next_node != None:
+                mst_edges[(cur_node, next_node)] = min_weight
         return mst_edges
 
 def draw(G, color_edges):
@@ -81,19 +82,20 @@ def draw(G, color_edges):
     pos = nx.kamada_kawai_layout(G)
     edge_labels = nx.get_edge_attributes(G, 'weight') # 画权重
     nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
-    nx.draw(G, pos, with_labels=True, edge_color=tuple(edge_color)) # 画边
+    nx.draw(G, pos, with_labels=True, edge_color=edge_color) # 画边
     plt.savefig("prim.png", format="PNG")
     plt.show()
     
 
 def main():
-    graph = [(0, 1, 6), (0, 2, 1), (0, 3, 5), (1, 2, 5), (1, 4, 3), (2, 3, 5), (2, 4, 6), (2, 5, 4), (3, 5, 2), (4, 5, 6)]
-    G = nx.Graph()
-    G.add_weighted_edges_from(graph)
-    num_nodes = G.number_of_nodes() # 图所有节点的数量
+    nodes = [0, 1, 2, 3, 4, 5]
+    edges = [(0, 1, 6), (0, 2, 1), (0, 3, 5), (1, 2, 5), (1, 4, 3), (2, 3, 5), (2, 4, 6), (2, 5, 4), (3, 5, 2), (4, 5, 6)]
     start_node = 0 # 开始节点
-    mst_edges = Prim(graph, num_nodes).mst(start_node)
+    mst_edges = Prim(nodes, edges).mst(start_node)
     print('{} | {}'.format(mst_edges, sum(mst_edges.values())))
+    G = nx.Graph()
+    G.add_nodes_from(nodes)
+    G.add_weighted_edges_from(edges)
     draw(G, list(mst_edges.keys()))
 
 if __name__ == '__main__':

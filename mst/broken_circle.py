@@ -5,8 +5,9 @@ from collections import defaultdict
 
 
 class BrokenCircle:
-    def __init__(self, graph) -> None:
-        self.graph = graph
+    def __init__(self, nodes, edges) -> None:
+        self.nodes = nodes
+        self.edges = edges
 
     def broken_circle(self):
         node_neighbors = defaultdict(set) # 节点和其邻居映射
@@ -14,13 +15,14 @@ class BrokenCircle:
         weights = []
         
         discard_edges = defaultdict(int) # 丢弃的边
-        for (u, v, w) in self.graph:
+        for (u, v, w) in self.edges:
             node_neighbors[u].add(v)
             node_neighbors[v].add(u)
             weights.append(w)
             weight_edges[w].add((u, v))
         weights.sort(reverse=True) # 权重逆序
         edges_visited = set() # 已经访问的边
+        # 感觉这里写一个dfs好些
         def bfs(start, end):
             '''广度优先搜索，判断start能否到达end（start和end是否连通）
             Parameters
@@ -82,17 +84,19 @@ def draw(G, color_edges):
     plt.show()
 
 def main():
-    graph = [(0, 1, 6), (0, 2, 1), (0, 3, 5), (1, 2, 5), (1, 4, 3), (2, 3, 5), (2, 4, 6), (2, 5, 4), (3, 5, 2), (4, 5, 6)]
-    G = nx.Graph()
-    G.add_weighted_edges_from(graph)
-    discard_edges = BrokenCircle(graph).broken_circle()
+    nodes = [0, 1, 2, 3, 4, 5]
+    edges = [(0, 1, 6), (0, 2, 1), (0, 3, 5), (1, 2, 5), (1, 4, 3), (2, 3, 5), (2, 4, 6), (2, 5, 4), (3, 5, 2), (4, 5, 6)]
+    discard_edges = BrokenCircle(nodes, edges).broken_circle()
     mst_edges = defaultdict(int)
-    for (u, v, w) in graph:
+    for (u, v, w) in edges:
         if discard_edges[(u, v)] == w:
             continue
         else:
             mst_edges[(u, v)] = w
     print('{} | {}'.format(mst_edges, sum(mst_edges.values())))
+    G = nx.Graph()
+    G.add_nodes_from(nodes)
+    G.add_weighted_edges_from(edges)
     draw(G, list(mst_edges.keys()))
 
 if __name__ == '__main__':

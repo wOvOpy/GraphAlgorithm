@@ -6,7 +6,7 @@ import scipy.sparse as sp
 import matplotlib.pyplot as plt
 
 
-INF = 20211120
+INF = 20211120 #一个较大的数，graph_mat[i][j]=INF表示i不可以到达j
 
 
 class FloydWarshall:
@@ -87,7 +87,8 @@ def main():
     finaly_mat, paths = FloydWarshall(graph_mat).shortest_path()
     print(finaly_mat)
     print(paths)
-    
+
+    # 返回经过的节点写的不是很好，后面有时间改进一下
     def get_nodes_edges(i, j):
         if i == j:
             return [i], []
@@ -103,8 +104,8 @@ def main():
         for j in range(i+1, count_node):
             print('{}->{}：{}，| {}'.format(i, j, get_nodes_edges(i, j), finaly_mat[i][j]))
             
-    start_node, end_node = 0, 5 # 开始节点，结束节点，用于探索最短路径
-    color_nodes, color_edges = get_nodes_edges(start_node, end_node)
-    draw(sp_mat, color_nodes, color_edges)
+    start_node, end_node = 0, 5 # 开始节点，结束节点
+    pass_nodes, pass_edges = get_nodes_edges(start_node, end_node)
+    draw(sp_mat, pass_nodes, pass_edges)
 if __name__ == '__main__':
     main()
