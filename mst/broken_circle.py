@@ -22,7 +22,24 @@ class BrokenCircle:
             weight_edges[w].add((u, v))
         weights.sort(reverse=True) # 权重逆序
         edges_visited = set() # 已经访问的边
-        # 感觉这里写一个dfs好些
+        
+        # 和下面的bfs任选其一   
+        def dfs(start, end):
+            stack = []
+            nodes_visited = set()
+            stack.append(start)
+            
+            while stack:
+                cur = stack.pop()
+                nodes_visited.add(cur)
+                if cur == end:
+                    return True
+                for node_neighbor in node_neighbors[cur]:
+                    if node_neighbor not in nodes_visited:
+                        stack.append(node_neighbor)
+            return False
+          
+        
         def bfs(start, end):
             '''广度优先搜索，判断start能否到达end（start和end是否连通）
             Parameters
@@ -55,9 +72,12 @@ class BrokenCircle:
                     u, v = edge[0], edge[1]
                     node_neighbors[u].remove(v)
                     node_neighbors[v].remove(u)
-                    if bfs(u, v):
+                    # bfs or dfs
+                    if dfs(u, v):
+                        print('删除({}, {})图仍然连通'.format(u, v))
                         discard_edges[(u, v)] = w
                     else:
+                        print('删除({}, {})图不连通'.format(u, v))
                         node_neighbors[u].add(v)
                         node_neighbors[v].add(u)    
                     edges_visited.add((u, v))
