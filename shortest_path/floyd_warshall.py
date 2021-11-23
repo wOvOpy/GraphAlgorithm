@@ -23,7 +23,28 @@ class FloydWarshall:
                         self.graph_mat[i][j] = self.graph_mat[i][k]+self.graph_mat[k][j]
                         path[i][j] = k
         return self.graph_mat, path
-    
+# 递归
+# def get_nodes_edges_recursion(paths, i, j):
+#         if i == j:
+#             return [i], []
+#         else:
+#             if paths[i][j] == -1:
+#                 return [j], [(i, j)]
+#             else:
+#                 left_nodes, left_edges = get_nodes_edges(paths, i, paths[i][j])
+#                 right_nodes, right_edges = get_nodes_edges(paths, paths[i][j], j)
+#         return left_nodes+right_nodes, left_edges+right_edges
+
+def get_nodes_edges(paths, i, j):
+    pass_nodes = [i, j]
+    pass_edges = []
+    while paths[i][j] != -1:
+        j = paths[i][j]
+        pass_nodes.insert(1, j)
+        pass_edges.append((j, pass_nodes[2]))
+    pass_edges.append((i, j))
+    return pass_nodes, pass_edges[::-1]
+
 def draw(sp_mat, color_nodes, color_edges):
     '''画一张图，并给指定的节点和边着色
     Parameters
@@ -88,24 +109,16 @@ def main():
     print(finaly_mat)
     print(paths)
 
-    # 返回经过的节点写的不是很好，后面有时间改进一下
-    def get_nodes_edges(i, j):
-        if i == j:
-            return [i], []
-        else:
-            if paths[i][j] == -1:
-                return [i, j], [(i, j)]
-            else:
-                left_nodes, left_edges = get_nodes_edges(i, paths[i][j])
-                right_nodes, right_edges = get_nodes_edges(paths[i][j], j)
-        return list(set(left_nodes).union(right_nodes)), left_edges+right_edges
-
     for i in range(count_node):
         for j in range(i+1, count_node):
-            print('{}->{}：{}，| {}'.format(i, j, get_nodes_edges(i, j), finaly_mat[i][j]))
+            print('{}->{}: {} | {}'.format(i, j, get_nodes_edges(paths, i, j), finaly_mat[i][j]))
             
     start_node, end_node = 0, 5 # 开始节点，结束节点
-    pass_nodes, pass_edges = get_nodes_edges(start_node, end_node)
+    pass_nodes, pass_edges = get_nodes_edges(paths, start_node, end_node)
+    '''使用get_nodes_edges_recursion注意添加开始节点
+    '''
+    # pass_nodes, pass_edges = get_nodes_edges_recursion(paths, start_node, end_node)
+    # pass_nodes.insert(0, start_node)
     draw(sp_mat, pass_nodes, pass_edges)
 if __name__ == '__main__':
     main()

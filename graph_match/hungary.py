@@ -54,6 +54,7 @@ def draw(G, nodes_one, nodes_two, color_edges):
     '''
     自定义pos
     '''
+    # 对matplotlib不太熟悉，布局有待改进
     pos = dict()
     size = max(len(nodes_one), len(nodes_two)) + 2
     one_x, two_x = size//3, 2*size // 3
@@ -72,15 +73,18 @@ def draw(G, nodes_one, nodes_two, color_edges):
     
 
 def main():
-    # 测试用例0
+    ''' 测试用例0
+    '''
     # nodes_one = [0, 1, 2, 3]
     # nodes_two = ['0', '1', '2', '3']
     # edges = [(0, '0'), (0, '1'), (1, '1'), (1, '2'), (2, '0'), (2, '1'), (3, '2')]
 
-    # 测试用例1
+    ''' 测试用例1
+    '''
     nodes_one = [0, 1, 2, 3] 
-    nodes_two = ['0', '1', '2', '3']
-    edges = [(0, '0'), (0, '1'), (1, '1'), (1, '2'), (2, '0'), (2, '1'), (3, '2'), (3, '3')] 
+    nodes_two = ['a', 'b', 'c', 'd']
+    edges = [(0, 'a'), (0, 'b'), (1, 'b'), (1, 'c'), (2, 'a'), (2, 'b'), (3, 'c'), (3, 'd')]
+    
     num_match, match = Hungary(nodes_one, nodes_two, edges).max_match()
     match_edges = []
     for key, value in match.items():
@@ -90,7 +94,6 @@ def main():
     G = nx.Graph()
     G.add_nodes_from(nodes_one+nodes_two)
     G.add_edges_from(edges)
-    print(G.nodes)
     draw(G, nodes_one, nodes_two, match_edges) 
 
 if __name__ == '__main__':
