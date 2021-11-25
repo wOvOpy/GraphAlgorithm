@@ -97,6 +97,7 @@ def draw(G, color_edges):
     
     # 边的长度和权重大小成正比
     pos = nx.kamada_kawai_layout(G)
+    plt.title('MST')
     nx.draw(G, pos, with_labels=True, edge_color=edge_color)
     edge_labels = nx.get_edge_attributes(G, 'weight')
     nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)

@@ -11,24 +11,25 @@ INF = 20211120 #一个较大的数，graph_mat[i][j]=INF表示i不可以到达j
 
 class FloydWarshall:
     def __init__(self, graph_mat) -> None:
-        self.graph_mat = graph_mat
+        self.graph_mat = graph_mat # 图的邻接矩阵
 
     def shortest_path(self):
         m, n = len(self.graph_mat), len(self.graph_mat[0])
-        path = [[-1] * n for _ in range(m)]
+        distance_mat = self.graph_mat.copy()
+        path = [[None] * n for _ in range(m)] # 记录路径
         for k in range(m):
             for i in range(m):
                 for j in range(n):
-                    if self.graph_mat[i][k]+self.graph_mat[k][j] < self.graph_mat[i][j]:
-                        self.graph_mat[i][j] = self.graph_mat[i][k]+self.graph_mat[k][j]
+                    if distance_mat[i][k]+distance_mat[k][j] < distance_mat[i][j]:
+                        distance_mat[i][j] = distance_mat[i][k]+distance_mat[k][j]
                         path[i][j] = k
-        return self.graph_mat, path
+        return distance_mat, path
 # 递归
 # def get_nodes_edges_recursion(paths, i, j):
 #         if i == j:
 #             return [i], []
 #         else:
-#             if paths[i][j] == -1:
+#             if paths[i][j] == None:
 #                 return [j], [(i, j)]
 #             else:
 #                 left_nodes, left_edges = get_nodes_edges(paths, i, paths[i][j])
@@ -38,7 +39,7 @@ class FloydWarshall:
 def get_nodes_edges(paths, i, j):
     pass_nodes = [i, j]
     pass_edges = []
-    while paths[i][j] != -1:
+    while paths[i][j] != None:
         j = paths[i][j]
         pass_nodes.insert(1, j)
         pass_edges.append((j, pass_nodes[2]))
@@ -67,7 +68,7 @@ def draw(sp_mat, color_nodes, color_edges):
     # print(nx_G.edges(data=True))
     edge_labels = nx.get_edge_attributes(nx_G, 'w')
     # tensor.item() tensor(0.)->0(tensor->int)
-    edge_labels = { (key[0],key[1]): "w:"+str(edge_labels[key].item()) for key in edge_labels }
+    edge_labels = { (key[0],key[1]): edge_labels[key].item() for key in edge_labels }
     edges = list(nx_G.edges)
     num_nodes = nx_G.number_of_nodes()
     num_edges = nx_G.number_of_edges()
@@ -82,7 +83,7 @@ def draw(sp_mat, color_nodes, color_edges):
         if (u, v) in set(color_edges) or (v, u) in set(color_edges):
             edge_color[i] = 'r'
     pos = nx.circular_layout(nx_G)
-    plt.title('Undigraph-Floyd Warshall')
+    plt.title('Undigraph: Shortest Path')
     nx.draw(nx_G, pos, with_labels=True, node_color=node_color, edge_color=edge_color)
     nx.draw_networkx_edge_labels(nx_G, pos, edge_labels=edge_labels)
     plt.savefig('floyd_warshall.png', format='PNG')
@@ -105,13 +106,13 @@ def main():
                 graph_mat[i][j] += graph_mat[j][i]
                 graph_mat[j][i] = graph_mat[i][j]
     
-    finaly_mat, paths = FloydWarshall(graph_mat).shortest_path()
-    print(finaly_mat)
+    distance_mat, paths = FloydWarshall(graph_mat).shortest_path()
+    print(distance_mat)
     print(paths)
 
     for i in range(count_node):
         for j in range(i+1, count_node):
-            print('{}->{}: {} | {}'.format(i, j, get_nodes_edges(paths, i, j), finaly_mat[i][j]))
+            print('{}->{}: {} | {}'.format(i, j, get_nodes_edges(paths, i, j), distance_mat[i][j]))
             
     start_node, end_node = 0, 5 # 开始节点，结束节点
     pass_nodes, pass_edges = get_nodes_edges(paths, start_node, end_node)

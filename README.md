@@ -25,3 +25,6 @@
 ### 3.1 Hungary algorithm
 - [代码](graph_match/hungary.py)
 - [图例](graph_match/hungary.png)
+### 3.2 Kuhn_Munkras
+- [代码](graph_match/kuhn_munkras.py)
+- [图例](graph_match/kuhn_munkras.png)
