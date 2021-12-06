@@ -10,23 +10,23 @@ class Kruskal:
     def mst(self):
         num_nodes = len(self.nodes) # 节点数量
         mst_edges = defaultdict(int)
-        parent = [_ for _ in range(num_nodes)]
+        root = [_ for _ in range(num_nodes)]
         rank = [0] * num_nodes
         '''并查集
         '''
-        def find_parent(v):
-            while parent[v] != v:
-                v = parent[v]
+        def find_root(v):
+            while root[v] != v:
+                v = root[v]
             return v 
         def union(u, v):
-            u_root = find_parent(u)
-            v_root = find_parent(v)
+            u_root = find_root(u)
+            v_root = find_root(v)
 
             if rank[u_root] > rank[v_root]:
-                parent[v_root] = u_root
+                root[v_root] = u_root
                 rank[v] += 1
             else:
-                parent[u_root] = v_root
+                root[u_root] = v_root
                 rank[u] += 1
   
         edge_dict = defaultdict(int) # 边权映射
@@ -35,7 +35,7 @@ class Kruskal:
         # 按权重大小排序（顺序）
         sorted_edge_dict = sorted(edge_dict.items(), key=lambda x: x[1])
         for ((u, v), w) in sorted_edge_dict:
-            if find_parent(u) == find_parent(v):
+            if find_root(u) == find_root(v):
                 continue
             else:
                 union(u, v)
