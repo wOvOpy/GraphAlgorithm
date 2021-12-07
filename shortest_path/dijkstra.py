@@ -29,23 +29,23 @@ class Dijkstra:
             visited = [start_node] # 已经访问的节点
             not_visit = [_ for _ in range(num_node) if _ != start_node] # 还没有访问的节点
 
-            while len(not_visit):
-                min_w_node = not_visit[0] # min_w_node : 某阶段开始节点start_node到它的距离最短的点
-                for i in not_visit:
-                    if distance[i] == None:
-                        continue
-                    elif distance[i] < distance[min_w_node]:
-                        min_w_node = i
-                not_visit.remove(min_w_node)
-                visited.append(min_w_node)
+        while len(not_visit):
+            min_w_node = not_visit[0] # min_w_node : 某阶段开始节点start_node到它的距离最短的点
+            for i in not_visit:
+                if distance[i] == None:
+                    continue
+                elif distance[i] < distance[min_w_node]:
+                    min_w_node = i
+            not_visit.remove(min_w_node)
+            visited.append(min_w_node)
 
-                # 更新最短距离和最短路径
-                for i in not_visit:
-                    if edge_weight[(min_w_node, i)] == None:
-                        continue
-                    elif distance[i] == None or distance[min_w_node]+edge_weight[(min_w_node, i)] < distance[i]:
-                        distance[i] = distance[min_w_node]+edge_weight[(min_w_node, i)]
-                        parent[i] = min_w_node
+            # 更新最短距离和最短路径
+            for i in not_visit:
+                if edge_weight[(min_w_node, i)] == None:
+                    continue
+                elif distance[i] == None or distance[min_w_node]+edge_weight[(min_w_node, i)] < distance[i]:
+                    distance[i] = distance[min_w_node]+edge_weight[(min_w_node, i)]
+                    parent[i] = min_w_node
         return parent, distance
 
 def get_nodes_edges(parent, end_node):
