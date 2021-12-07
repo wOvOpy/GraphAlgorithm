@@ -25,7 +25,7 @@ class Dijkstra:
         for neighbor in node_neighbors[start_node]:
             parent[neighbor] = start_node
             distance[neighbor] = edge_weight[(start_node, neighbor)]
-            not_visit = [_ for _ in range(num_node) if _ != start_node] # 还没有访问的节点
+        not_visit = [_ for _ in range(num_node) if _ != start_node] # 还没有访问的节点
 
         while len(not_visit):
             min_w_node = not_visit[0] # min_w_node: 某阶段开始节点start_node到它的距离最短的点
