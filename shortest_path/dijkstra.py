@@ -11,8 +11,8 @@ class Dijkstra:
 
     def shortest_path(self, start_node):
         num_node = len(self.nodes)
-        parent = [None] * num_node # 记录路径，初始化全为：None
-        distance = [None] * num_node # 初始化最短距离全为：None
+        parent = [None] * num_node # 记录路径，初始化全为: None
+        distance = [None] * num_node # 初始化最短距离全为: None
         edge_weight = defaultdict(lambda: None) # 边和权重映射
         node_neighbors = defaultdict(set) # 节点和其邻居映射
         # 初始化
@@ -25,7 +25,6 @@ class Dijkstra:
         for neighbor in node_neighbors[start_node]:
             parent[neighbor] = start_node
             distance[neighbor] = edge_weight[(start_node, neighbor)]
-
             not_visit = [_ for _ in range(num_node) if _ != start_node] # 还没有访问的节点
 
         while len(not_visit):
@@ -111,7 +110,7 @@ def draw(DG, color_nodes, color_edges):
     edge_labels = nx.get_edge_attributes(DG, 'weight')
     # edge_labels = { (key[0],key[1]): "w:"+str(edge_labels[key]) for key in edge_labels }
     nx.draw_networkx_edge_labels(DG, pos, edge_labels=edge_labels) # 画权重
-    # plt.savefig('dijkstra.png', format='PNG')
+    plt.savefig('dijkstra.png', format='PNG')
     plt.show()
 
 
