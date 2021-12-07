@@ -26,18 +26,16 @@ class Dijkstra:
             parent[neighbor] = start_node
             distance[neighbor] = edge_weight[(start_node, neighbor)]
 
-            visited = [start_node] # 已经访问的节点
             not_visit = [_ for _ in range(num_node) if _ != start_node] # 还没有访问的节点
 
         while len(not_visit):
-            min_w_node = not_visit[0] # min_w_node : 某阶段开始节点start_node到它的距离最短的点
+            min_w_node = not_visit[0] # min_w_node: 某阶段开始节点start_node到它的距离最短的点
             for i in not_visit:
                 if distance[i] == None:
                     continue
                 elif distance[i] < distance[min_w_node]:
                     min_w_node = i
             not_visit.remove(min_w_node)
-            visited.append(min_w_node)
 
             # 更新最短距离和最短路径
             for i in not_visit:
@@ -113,7 +111,7 @@ def draw(DG, color_nodes, color_edges):
     edge_labels = nx.get_edge_attributes(DG, 'weight')
     # edge_labels = { (key[0],key[1]): "w:"+str(edge_labels[key]) for key in edge_labels }
     nx.draw_networkx_edge_labels(DG, pos, edge_labels=edge_labels) # 画权重
-    plt.savefig('dijkstra.png', format='PNG')
+    # plt.savefig('dijkstra.png', format='PNG')
     plt.show()
 
 
