@@ -24,9 +24,10 @@ class Kruskal:
 
             if rank[u_root] > rank[v_root]:
                 root[v_root] = u_root
-                rank[v] += 1
-            else:
+            elif rank[u_root] < rank[v_root]:
                 root[u_root] = v_root
+            else:
+                root[v_root] = u_root
                 rank[u] += 1
   
         edge_dict = defaultdict(int) # 边权映射
@@ -58,7 +59,7 @@ def draw(G, color_edges):
     nx.draw(G, pos, with_labels=True, edge_color=edge_color)
     edge_labels = nx.get_edge_attributes(G, 'weight')
     nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
-    plt.savefig("kruskal.png", format="PNG")
+    # plt.savefig("kruskal.png", format="PNG")
     plt.show()
 
 def main():
