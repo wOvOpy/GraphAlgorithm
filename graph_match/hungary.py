@@ -67,7 +67,7 @@ def draw(G, nodes_one, nodes_two, color_edges):
     # print(pos)
     plt.title('Hungary Algorithm: Maximum Matching')
     nx.draw(G, pos, with_labels=True, node_color=node_color, edge_color=edge_color)
-    plt.savefig('hungary.png', format='PNG')
+    # plt.savefig('hungary.png', format='PNG')
     plt.show()
     
 
@@ -80,9 +80,13 @@ def main():
 
     ''' 测试用例1
     '''
-    nodes_one = [0, 1, 2, 3] 
-    nodes_two = ['a', 'b', 'c', 'd']
-    edges = [(0, 'a'), (0, 'b'), (1, 'b'), (1, 'c'), (2, 'a'), (2, 'b'), (3, 'c'), (3, 'd')]
+    # nodes_one = [0, 1, 2, 3] 
+    # nodes_two = ['a', 'b', 'c', 'd']
+    # edges = [(0, 'a'), (0, 'b'), (1, 'b'), (1, 'c'), (2, 'a'), (2, 'b'), (3, 'c'), (3, 'd')]
+
+    nodes_one = [0, 1, 2, 3, 4]
+    nodes_two = ['0', '1', '2', '3', '4']
+    edges = [(0, '1'), (0, '2'), (1, '0'), (1, '1'), (1, '3'), (1, '4'), (2, '1'), (2, '2'), (3, '1'), (3, '2'), (4, '3'), (4, '4')]
     
     num_match, match = Hungary(nodes_one, nodes_two, edges).max_match()
     match_edges = [(u, v) for u, v in match.items()]
